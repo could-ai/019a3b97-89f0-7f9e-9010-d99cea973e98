@@ -1,5 +1,6 @@
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class RegistrationScreen extends StatefulWidget {
   const RegistrationScreen({super.key});
@@ -10,14 +11,48 @@ class RegistrationScreen extends StatefulWidget {
 
 class _RegistrationScreenState extends State<RegistrationScreen> {
   final _formKey = GlobalKey<FormState>();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
   String? _selectedLanguageToLearn;
   String? _selectedProficiencyLevel;
   String? _selectedInterfaceLanguage;
   bool _rememberMe = false;
+  bool _isLoading = false;
 
   final List<String> _languages = ['German', 'English', 'Spanish', 'French', 'Italian'];
   final List<String> _proficiencyLevels = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
   final List<String> _interfaceLanguages = ['English', 'Serbian', 'German'];
+
+  Future<void> _register() async {
+    if (!_formKey.currentState!.validate()) return;
+
+    setState(() => _isLoading = true);
+
+    try {
+      // Simulate registration. Replace with Firebase Auth later
+      await Future.delayed(const Duration(seconds: 1));
+
+      // Save user preferences
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('languageToLearn', _selectedLanguageToLearn!);
+      await prefs.setString('proficiencyLevel', _selectedProficiencyLevel!);
+      await prefs.setString('interfaceLanguage', _selectedInterfaceLanguage!);
+      if (_rememberMe) {
+        await prefs.setString('email', _emailController.text);
+        await prefs.setString('password', _passwordController.text);
+        await prefs.setBool('rememberMe', true);
+      }
+
+      if (!mounted) return;
+      Navigator.pushReplacementNamed(context, '/chat');
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Registration failed: $e')),
+      );
+    } finally {
+      setState(() => _isLoading = false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -35,6 +70,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: <Widget>[
                 TextFormField(
+                  controller: _emailController,
                   decoration: const InputDecoration(
                     labelText: 'Email',
                     border: OutlineInputBorder(),
@@ -53,6 +89,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                 ),
                 const SizedBox(height: 16.0),
                 TextFormField(
+                  controller: _passwordController,
                   decoration: const InputDecoration(
                     labelText: 'Password',
                     border: OutlineInputBorder(),
@@ -145,39 +182,21 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                 ),
                 const SizedBox(height: 24.0),
                 ElevatedButton(
-                  onPressed: () {
-                    if (_formKey.currentState!.validate()) {
-                      // Process data
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Processing Data')),
-                      );
-                    }
-                  },
+                  onPressed: _isLoading ? null : _register,
                   style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 16.0),
                   ),
-                  child: const Text('Register'),
+                  child: _isLoading
+                      ? const CircularProgressIndicator()
+                      : const Text('Register'),
                 ),
                 const SizedBox(height: 16.0),
                 Center(
-                  child: RichText(
-                    text: TextSpan(
-                      text: "Already have an account? ",
-                      style: DefaultTextStyle.of(context).style,
-                      children: <TextSpan>[
-                        TextSpan(
-                          text: 'Login',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: Theme.of(context).colorScheme.primary,
-                          ),
-                          recognizer: TapGestureRecognizer()
-                            ..onTap = () {
-                              Navigator.pop(context);
-                            },
-                        ),
-                      ],
-                    ),
+                  child: TextButton(
+                    onPressed: () {
+                      Navigator.pushNamed(context, '/login');
+                    },
+                    child: const Text('Already have an account? Login'),
                   ),
                 ),
               ],

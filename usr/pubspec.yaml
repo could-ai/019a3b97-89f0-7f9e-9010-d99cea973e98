@@ -1,5 +1,5 @@
 name: couldai_user_app
-description: "A new Flutter project."
+description: "German ChatBot App for language learning with voice interaction, personalized conversations, and progress tracking."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
@@ -21,7 +21,7 @@ version: 1.0.0+1
 environment:
   sdk: ^3.7.2
 
-# Dependencies specify other packages that your package needs in order to work.
+# Dependencies specify other packages that your packages needs in order to work.
 # To automatically upgrade your package dependencies to the latest versions
 # consider running `flutter pub upgrade --major-versions`. Alternatively,
 # dependencies can be manually updated by changing the version numbers below to
@@ -34,6 +34,30 @@ dependencies:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
+
+  # Firebase packages for authentication and Firestore
+  firebase_core: ^2.24.2
+  cloud_firestore: ^4.14.0
+  firebase_auth: ^4.16.0
+
+  # Voice and speech packages
+  speech_to_text: ^6.1.1
+  flutter_tts: ^3.8.3
+
+  # Camera for visual recognition
+  camera: ^0.10.5
+  google_ml_kit: ^0.18.0
+
+  # Local storage and preferences
+  shared_preferences: ^2.2.2
+  provider: ^6.0.5
+
+  # Utilities
+  intl: ^0.19.0
+  path_provider: ^2.1.2
+
+  # For offline dictionary (mock data for now)
+  # Add any additional packages as needed
 
 dev_dependencies:
   flutter_test:
@@ -61,6 +85,7 @@ flutter:
   # assets:
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
+  #   - assets/dictionary/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
