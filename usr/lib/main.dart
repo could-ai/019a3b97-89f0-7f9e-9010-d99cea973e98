@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:couldai_user_app/screens/registration_screen.dart';
+import 'package:couldai_user_app/screens/login_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -17,7 +17,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.blueAccent),
         useMaterial3: true,
       ),
-      home: const RegistrationScreen(),
+      home: const LoginScreen(),
     );
   }
 }

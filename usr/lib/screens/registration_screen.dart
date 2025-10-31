@@ -1,3 +1,4 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
 class RegistrationScreen extends StatefulWidget {
@@ -156,6 +157,28 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                     padding: const EdgeInsets.symmetric(vertical: 16.0),
                   ),
                   child: const Text('Register'),
+                ),
+                const SizedBox(height: 16.0),
+                Center(
+                  child: RichText(
+                    text: TextSpan(
+                      text: "Already have an account? ",
+                      style: DefaultTextStyle.of(context).style,
+                      children: <TextSpan>[
+                        TextSpan(
+                          text: 'Login',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Theme.of(context).colorScheme.primary,
+                          ),
+                          recognizer: TapGestureRecognizer()
+                            ..onTap = () {
+                              Navigator.pop(context);
+                            },
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
               ],
             ),
