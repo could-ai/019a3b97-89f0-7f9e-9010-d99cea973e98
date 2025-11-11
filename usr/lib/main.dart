@@ -4,7 +4,6 @@ import 'package:couldai_user_app/providers/auth_provider.dart';
 import 'package:couldai_user_app/screens/chat_screen.dart';
 import 'package:couldai_user_app/screens/daily_challenges_screen.dart';
 import 'package:couldai_user_app/screens/home_screen.dart';
-import 'package:couldai_user_app/screens/login_screen.dart';
 import 'package:couldai_user_app/screens/offline_dictionary_screen.dart';
 import 'package:couldai_user_app/screens/progress_report_screen.dart';
 import 'package:couldai_user_app/screens/registration_screen.dart';
@@ -15,19 +14,17 @@ import 'package:couldai_user_app/utils/user_preferences.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final userData = await UserPreferences.loadUserData();
-  final bool rememberMe = userData['rememberMe'] as bool;
-  final String? savedEmail = userData['email'];
-  final String? savedPassword = userData['password'];
+  final bool hasCompletedRegistration = userData['hasCompletedRegistration'] as bool? ?? false;
 
   runApp(MyApp(
-    isLoggedIn: rememberMe && savedEmail != null && savedPassword != null,
+    hasCompletedRegistration: hasCompletedRegistration,
   ));
 }
 
 class MyApp extends StatelessWidget {
-  final bool isLoggedIn;
+  final bool hasCompletedRegistration;
 
-  const MyApp({super.key, required this.isLoggedIn});
+  const MyApp({super.key, required this.hasCompletedRegistration});
 
   @override
   Widget build(BuildContext context) {
@@ -39,9 +36,9 @@ class MyApp extends StatelessWidget {
           primarySwatch: Colors.blue,
           visualDensity: VisualDensity.adaptivePlatformDensity,
         ),
-        home: isLoggedIn ? const HomeScreen() : const LoginScreen(),
+        home: hasCompletedRegistration ? const HomeScreen() : const RegistrationScreen(),
         routes: {
-          '/login': (context) => const LoginScreen(),
+          '/': (context) => hasCompletedRegistration ? const HomeScreen() : const RegistrationScreen(),
           '/register': (context) => const RegistrationScreen(),
           '/chat': (context) => const ChatScreen(),
           '/home': (context) => const HomeScreen(),

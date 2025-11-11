@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class RegistrationScreen extends StatefulWidget {
@@ -11,40 +10,30 @@ class RegistrationScreen extends StatefulWidget {
 
 class _RegistrationScreenState extends State<RegistrationScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
   String? _selectedLanguageToLearn;
   String? _selectedProficiencyLevel;
   String? _selectedInterfaceLanguage;
-  bool _rememberMe = false;
   bool _isLoading = false;
 
   final List<String> _languages = ['German', 'English', 'Spanish', 'French', 'Italian'];
   final List<String> _proficiencyLevels = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
   final List<String> _interfaceLanguages = ['English', 'Serbian', 'German'];
 
-  Future<void> _register() async {
+  Future<void> _completeRegistration() async {
     if (!_formKey.currentState!.validate()) return;
 
     setState(() => _isLoading = true);
 
     try {
-      // Simulate registration. Replace with Firebase Auth later
-      await Future.delayed(const Duration(seconds: 1));
-
       // Save user preferences
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString('languageToLearn', _selectedLanguageToLearn!);
       await prefs.setString('proficiencyLevel', _selectedProficiencyLevel!);
       await prefs.setString('interfaceLanguage', _selectedInterfaceLanguage!);
-      if (_rememberMe) {
-        await prefs.setString('email', _emailController.text);
-        await prefs.setString('password', _passwordController.text);
-        await prefs.setBool('rememberMe', true);
-      }
+      await prefs.setBool('hasCompletedRegistration', true);
 
       if (!mounted) return;
-      Navigator.pushReplacementNamed(context, '/chat');
+      Navigator.pushReplacementNamed(context, '/home');
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Registration failed: $e')),
@@ -58,7 +47,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Register'),
+        title: const Text('Welcome - Setup Your Learning'),
         centerTitle: true,
       ),
       body: SingleChildScrollView(
@@ -69,44 +58,13 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: <Widget>[
-                TextFormField(
-                  controller: _emailController,
-                  decoration: const InputDecoration(
-                    labelText: 'Email',
-                    border: OutlineInputBorder(),
-                    prefixIcon: Icon(Icons.email),
-                  ),
-                  keyboardType: TextInputType.emailAddress,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter your email';
-                    }
-                    if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value)) {
-                      return 'Please enter a valid email';
-                    }
-                    return null;
-                  },
+                const SizedBox(height: 20),
+                const Text(
+                  'Choose your learning preferences:',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  textAlign: TextAlign.center,
                 ),
-                const SizedBox(height: 16.0),
-                TextFormField(
-                  controller: _passwordController,
-                  decoration: const InputDecoration(
-                    labelText: 'Password',
-                    border: OutlineInputBorder(),
-                    prefixIcon: Icon(Icons.lock),
-                  ),
-                  obscureText: true,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter your password';
-                    }
-                    if (value.length < 6) {
-                      return 'Password must be at least 6 characters long';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 16.0),
+                const SizedBox(height: 30),
                 DropdownButtonFormField<String>(
                   decoration: const InputDecoration(
                     labelText: 'Language to Learn',
@@ -169,35 +127,15 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                   },
                   validator: (value) => value == null ? 'Please select an interface language' : null,
                 ),
-                const SizedBox(height: 16.0),
-                CheckboxListTile(
-                  title: const Text('Remember me'),
-                  value: _rememberMe,
-                  onChanged: (newValue) {
-                    setState(() {
-                      _rememberMe = newValue ?? false;
-                    });
-                  },
-                  controlAffinity: ListTileControlAffinity.leading,
-                ),
-                const SizedBox(height: 24.0),
+                const SizedBox(height: 30),
                 ElevatedButton(
-                  onPressed: _isLoading ? null : _register,
+                  onPressed: _isLoading ? null : _completeRegistration,
                   style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 16.0),
                   ),
                   child: _isLoading
                       ? const CircularProgressIndicator()
-                      : const Text('Register'),
-                ),
-                const SizedBox(height: 16.0),
-                Center(
-                  child: TextButton(
-                    onPressed: () {
-                      Navigator.pushNamed(context, '/login');
-                    },
-                    child: const Text('Already have an account? Login'),
-                  ),
+                      : const Text('Start Learning', style: TextStyle(fontSize: 18)),
                 ),
               ],
             ),

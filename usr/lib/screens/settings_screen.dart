@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:couldai_user_app/utils/user_preferences.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -66,10 +67,32 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ),
           const Divider(),
           ListTile(
-            title: const Text('Logout'),
-            trailing: const Icon(Icons.logout),
-            onTap: () {
-              Navigator.pushReplacementNamed(context, '/login');
+            title: const Text('Reset App Data'),
+            subtitle: const Text('Clear all preferences and start over'),
+            trailing: const Icon(Icons.refresh),
+            onTap: () async {
+              final confirm = await showDialog<bool>(
+                context: context,
+                builder: (context) => AlertDialog(
+                  title: const Text('Reset App Data'),
+                  content: const Text('Are you sure you want to reset all your data and preferences? This will restart the app from the beginning.'),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(context, false),
+                      child: const Text('Cancel'),
+                    ),
+                    TextButton(
+                      onPressed: () => Navigator.pop(context, true),
+                      child: const Text('Reset', style: TextStyle(color: Colors.red)),
+                    ),
+                  ],
+                ),
+              );
+              
+              if (confirm == true && mounted) {
+                await UserPreferences.clearUserData();
+                Navigator.pushReplacementNamed(context, '/register');
+              }
             },
           ),
         ],
